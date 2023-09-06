@@ -56,9 +56,9 @@ class FeatureSelectionAgorithm():
 
 class LRS(FeatureSelectionAgorithm):
     """Implements LRS: Plus-L-Minus-R Selection. Based on the implementation here: http://enggjournals.com/ijcse/doc/IJCSE11-03-05-051.pdf"""
-    def __init__(self, dataset, predict_score_method, m, r, features_dim=2, **prediction_args):
+    def __init__(self, dataset, predict_score_method, l, r, features_dim=2, **prediction_args):
         super().__init__(dataset, predict_score_method, features_dim, **prediction_args)
-        self.m = m
+        self.l = l
         self.r = r
 
 
@@ -80,13 +80,13 @@ class LRS(FeatureSelectionAgorithm):
         return best_score, best_feature, best_dataset
     
 
-    def add_m_remove_r_one_iteration(self, existing_dataset):
+    def add_l_remove_r_one_iteration(self, existing_dataset):
         
         feature_set_to_add = self.all_feature_set - self.features_used
         print("feature_set_to_add", feature_set_to_add)
 
-        # add m features
-        for i in range(self.m):
+        # add l features
+        for i in range(self.l):
             best_score, best_feature, best_dataset = self.find_feature_to_add(existing_dataset, feature_set_to_add)
             print(f"best_score: {best_score}, best_feature: {best_feature}")
 
@@ -104,14 +104,14 @@ class LRS(FeatureSelectionAgorithm):
 
         return best_score, existing_dataset
     
-    def get_plus_m_minus_r(self):
+    def get_plus_l_minus_r(self):
         output_dict = {}
 
-        if self.m > self.r:
+        if self.l > self.r:
             new_dataset = torch.zeros(self.dataset.shape) # initialize
 
-            while len(self.features_used) <= self.num_features - self.m:
-                best_score, new_dataset = self.add_m_remove_r_one_iteration(new_dataset)
+            while len(self.features_used) <= self.num_features - self.l:
+                best_score, new_dataset = self.add_l_remove_r_one_iteration(new_dataset)
                 print(best_score)
                 output_dict[",".join(str(x) for x in self.features_used)] = best_score
 
@@ -127,7 +127,7 @@ class LRS(FeatureSelectionAgorithm):
         return output_dict
     
     def evaluate(self):
-        return self.get_plus_m_minus_r()
+        return self.get_plus_l_minus_r()
 
 
 class SFS(FeatureSelectionAgorithm):
