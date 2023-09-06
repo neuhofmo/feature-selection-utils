@@ -24,7 +24,7 @@ Plus-l-minus-r sequence
 metric = 'recall'
 l = 2
 r = 1
-print(f"Running LRS for metric: {metric} with m={m}, r={r}: ***************")
+print(f"Running LRS for metric: {metric} with l={l}, r={r}: ***************")
 prediction_args = {'labels': labels, 'metric': metric}
 
 # assuming our prediction method is self.predict_for_selected_metric
